@@ -1,25 +1,24 @@
 import { Client } from "@opensearch-project/opensearch";
+import { AwsSigv4Signer } from "@opensearch-project/opensearch/aws";
+import { defaultProvider } from "@aws-sdk/credential-provider-node";
+
+const OPENSEARCH_ENDPOINT =
+  process.env.OPENSEARCH_ENDPOINT ||
+  "https://ws7rk9i4hrsodv2dwo7b.ap-northeast-1.aoss.amazonaws.com";
+
+const AWS_REGION = process.env.AWS_REGION || "ap-northeast-1";
 
 function createClient(): Client {
-  const endpoint = process.env.OPENSEARCH_ENDPOINT;
-  if (!endpoint) {
-    throw new Error("OPENSEARCH_ENDPOINT environment variable is not set");
-  }
-
-  const username = process.env.OPENSEARCH_USERNAME;
-  const password = process.env.OPENSEARCH_PASSWORD;
-
-  if (username && password) {
-    return new Client({
-      node: endpoint,
-      auth: { username, password },
-      ssl: { rejectUnauthorized: false },
-    });
-  }
-
   return new Client({
-    node: endpoint,
-    ssl: { rejectUnauthorized: false },
+    ...AwsSigv4Signer({
+      region: AWS_REGION,
+      service: "aoss", // "aoss" for OpenSearch Serverless
+      getCredentials: () => {
+        const credentialsProvider = defaultProvider();
+        return credentialsProvider();
+      },
+    }),
+    node: OPENSEARCH_ENDPOINT,
   });
 }
 

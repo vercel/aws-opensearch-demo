@@ -147,23 +147,23 @@ export async function searchRecipes(params: SearchParams): Promise<SearchResult>
 export async function getSuggestions(prefix: string): Promise<string[]> {
   if (!prefix || prefix.length < 2) return [];
 
+  // Use prefix query on title field for autocomplete
+  // (completion suggester not supported in OpenSearch Serverless)
   const response = await client.search({
     index: INDEX_NAME,
     body: {
-      suggest: {
-        recipe_suggest: {
-          prefix,
-          completion: {
-            field: "title_suggest",
-            size: 5,
-            fuzzy: { fuzziness: "AUTO" },
+      query: {
+        match_phrase_prefix: {
+          title: {
+            query: prefix,
+            max_expansions: 10,
           },
         },
       },
-      size: 0,
+      _source: ["title"],
+      size: 5,
     },
   });
 
-  const suggestions = response.body.suggest?.recipe_suggest?.[0]?.options || [];
-  return suggestions.map((s: any) => s.text);
+  return response.body.hits.hits.map((hit: any) => hit._source.title);
 }

@@ -1,9 +1,16 @@
 import { config } from "dotenv";
 import path from "path";
 import { Client } from "@opensearch-project/opensearch";
+import { AwsSigv4Signer } from "@opensearch-project/opensearch/aws";
+import { defaultProvider } from "@aws-sdk/credential-provider-node";
 
 config({ path: path.resolve(process.cwd(), ".env.local") });
 
+const OPENSEARCH_ENDPOINT =
+  process.env.OPENSEARCH_ENDPOINT ||
+  "https://ws7rk9i4hrsodv2dwo7b.ap-northeast-1.aoss.amazonaws.com";
+
+const AWS_REGION = process.env.AWS_REGION || "ap-northeast-1";
 const INDEX_NAME = "recipes";
 
 const recipes = [
@@ -250,67 +257,44 @@ const recipes = [
 ];
 
 async function main() {
-  const endpoint = process.env.OPENSEARCH_ENDPOINT;
-  if (!endpoint) {
-    console.error("Error: OPENSEARCH_ENDPOINT is not set");
-    process.exit(1);
-  }
-
-  const username = process.env.OPENSEARCH_USERNAME;
-  const password = process.env.OPENSEARCH_PASSWORD;
-
   const opensearch = new Client({
-    node: endpoint,
-    ...(username && password ? { auth: { username, password } } : {}),
-    ssl: { rejectUnauthorized: false },
+    ...AwsSigv4Signer({
+      region: AWS_REGION,
+      service: "aoss",
+      getCredentials: () => {
+        const credentialsProvider = defaultProvider();
+        return credentialsProvider();
+      },
+    }),
+    node: OPENSEARCH_ENDPOINT,
   });
 
-  // Delete index if it exists
-  const exists = await opensearch.indices.exists({ index: INDEX_NAME });
-  if (exists.body) {
-    console.log(`Deleting existing index "${INDEX_NAME}"...`);
+  // OpenSearch Serverless doesn't support checking if index exists the same way.
+  // Try to delete, ignore if it doesn't exist.
+  try {
     await opensearch.indices.delete({ index: INDEX_NAME });
+    console.log(`Deleted existing index "${INDEX_NAME}".`);
+  } catch (e: any) {
+    if (e.statusCode !== 404) {
+      console.log("Index does not exist yet, creating fresh.");
+    }
   }
 
-  // Create index with mappings and custom analyzer
+  // Create index with mappings
+  // Note: OpenSearch Serverless doesn't support custom settings like
+  // number_of_shards, number_of_replicas, or custom analyzers with synonyms.
+  // We use a simplified mapping compatible with Serverless.
   console.log(`Creating index "${INDEX_NAME}"...`);
   await opensearch.indices.create({
     index: INDEX_NAME,
     body: {
-      settings: {
-        number_of_shards: 1,
-        number_of_replicas: 0,
-        analysis: {
-          analyzer: {
-            recipe_analyzer: {
-              type: "custom",
-              tokenizer: "standard",
-              filter: ["lowercase", "asciifolding", "recipe_synonyms"],
-            },
-          },
-          filter: {
-            recipe_synonyms: {
-              type: "synonym",
-              synonyms: [
-                "bbq,barbecue,barbeque",
-                "veggie,vegetable",
-                "chili,chilli,chile",
-              ],
-            },
-          },
-        },
-      },
       mappings: {
         properties: {
           title: {
             type: "text",
-            analyzer: "recipe_analyzer",
             fields: { keyword: { type: "keyword" } },
           },
-          title_suggest: {
-            type: "completion",
-          },
-          description: { type: "text", analyzer: "recipe_analyzer" },
+          description: { type: "text" },
           cuisine: {
             type: "text",
             fields: { keyword: { type: "keyword" } },
@@ -320,23 +304,21 @@ async function main() {
             fields: { keyword: { type: "keyword" } },
           },
           cookTimeMinutes: { type: "integer" },
-          ingredients: { type: "text", analyzer: "recipe_analyzer" },
+          ingredients: { type: "text" },
         },
       },
     },
   });
+  console.log("Index created.");
 
   // Bulk index
   console.log(`Indexing ${recipes.length} recipes...`);
   const body = recipes.flatMap((recipe, i) => [
     { index: { _index: INDEX_NAME, _id: String(i + 1) } },
-    {
-      ...recipe,
-      title_suggest: { input: recipe.title.split(" ") },
-    },
+    recipe,
   ]);
 
-  const bulkResponse = await opensearch.bulk({ body, refresh: true });
+  const bulkResponse = await opensearch.bulk({ body });
 
   if (bulkResponse.body.errors) {
     const errors = bulkResponse.body.items.filter(
@@ -346,6 +328,9 @@ async function main() {
   } else {
     console.log(`Successfully indexed ${recipes.length} recipes.`);
   }
+
+  // Wait a moment for serverless to make docs searchable
+  await new Promise((resolve) => setTimeout(resolve, 2000));
 
   // Verify
   const count = await opensearch.count({ index: INDEX_NAME });
