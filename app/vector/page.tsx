@@ -1,29 +1,44 @@
-import { Brain } from "lucide-react";
+import { Suspense } from "react";
+import { semanticSearch } from "@/lib/vector/queries";
+import { VectorSearchInterface } from "@/components/vector-search";
+import Loading from "@/components/loading";
 
-export default function VectorPage() {
+type Props = {
+  searchParams: Promise<{ q?: string }>;
+};
+
+export default async function VectorPage({ searchParams }: Props) {
   return (
-    <div className="space-y-6">
-      <div className="text-sm border border-dashed border-gray-300 dark:border-gray-600 p-4 bg-white dark:bg-gray-900 rounded">
-        <p className="text-gray-800 dark:text-gray-200">
+    <div>
+      <div className="text-sm border border-dashed border-gray-300 dark:border-gray-600 p-4 mb-4 bg-white dark:bg-gray-900 rounded">
+        <p className="text-gray-800 dark:text-gray-200 mb-2">
           <b className="font-bold">AI Fashion Assistant</b> — powered by
           OpenSearch Serverless (Vector collection) with semantic embeddings.
         </p>
-        <p className="text-gray-500 mt-2 text-xs">
-          Describe what you&apos;re looking for in natural language. The system
-          converts your query into a vector embedding and finds the most
-          semantically similar items using k-NN search.
-        </p>
+        <details className="group">
+          <summary className="cursor-pointer text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-xs">
+            How does this work?
+          </summary>
+          <p className="p-3 mt-2 bg-gray-100 dark:bg-gray-800 text-xs text-gray-600 dark:text-gray-400">
+            Your query is converted into a 384-dimensional vector using the
+            all-MiniLM-L6-v2 model. OpenSearch then performs a k-nearest
+            neighbors (k-NN) search to find fashion items whose embeddings are
+            closest in vector space — matching by meaning, not keywords.
+          </p>
+        </details>
       </div>
 
-      <div className="flex items-center justify-center py-20 text-gray-400">
-        <div className="text-center space-y-3">
-          <Brain className="w-12 h-12 mx-auto opacity-30" />
-          <p className="text-sm">Vector search coming soon</p>
-          <p className="text-xs text-gray-400">
-            Collection: 9i1yy3zrca5efg16vasa.us-east-1.aoss.amazonaws.com
-          </p>
-        </div>
-      </div>
+      <Suspense fallback={<Loading />}>
+        <SearchResults searchParams={searchParams} />
+      </Suspense>
     </div>
   );
+}
+
+async function SearchResults({ searchParams }: Props) {
+  const params = await searchParams;
+  const query = params.q || "";
+  const result = query ? await semanticSearch(query) : null;
+
+  return <VectorSearchInterface initialQuery={query} result={result} />;
 }
