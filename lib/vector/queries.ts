@@ -32,7 +32,7 @@ export async function semanticSearch(
     // Generate embedding for the user's query
     const queryVector = await generateEmbedding(query);
 
-    // k-NN search in OpenSearch
+    // k-NN search in OpenSearch Serverless
     const response = await vectorClient.search({
       index: INDEX_NAME,
       body: {
@@ -45,6 +45,7 @@ export async function semanticSearch(
             },
           },
         },
+        _source: { excludes: ["embedding"] },
       },
     });
 

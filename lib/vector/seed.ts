@@ -36,7 +36,7 @@ async function main() {
     console.log("Index does not exist yet, creating fresh.");
   }
 
-  // Create index with k-NN mapping
+  // Create index with k-NN mapping (AOSS Vector compatible)
   console.log(`Creating index "${INDEX_NAME}" with k-NN mapping...`);
   await client.indices.create({
     index: INDEX_NAME,
@@ -59,15 +59,16 @@ async function main() {
             dimension: EMBEDDING_DIM,
             method: {
               name: "hnsw",
-              space_type: "cosinesimil",
-              engine: "nmslib",
+              space_type: "l2",
+              engine: "faiss",
             },
           },
         },
       },
     },
   });
-  console.log("Index created.");
+  console.log("Index created. Waiting for it to become ready...");
+  await new Promise((resolve) => setTimeout(resolve, 10000));
 
   // Generate embeddings and index items
   console.log(`Generating embeddings for ${fashionItems.length} items...`);
@@ -80,7 +81,6 @@ async function main() {
 
     await client.index({
       index: INDEX_NAME,
-      id: item.id,
       body: {
         ...item,
         embedding,
