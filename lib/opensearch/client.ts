@@ -12,7 +12,7 @@ function createClient(): Client {
   return new Client({
     ...AwsSigv4Signer({
       region: AWS_REGION,
-      service: "aoss", // "aoss" for OpenSearch Serverless
+      service: "aoss",
       getCredentials: () => {
         const credentialsProvider = defaultProvider();
         return credentialsProvider();

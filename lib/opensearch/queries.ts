@@ -39,13 +39,14 @@ export interface SearchParams {
   maxCookTime?: number;
 }
 
-export async function searchRecipes(params: SearchParams): Promise<SearchResult> {
+export async function searchRecipes(
+  params: SearchParams,
+): Promise<SearchResult> {
   const startTime = performance.now();
 
   const must: any[] = [];
   const filter: any[] = [];
 
-  // Full-text search with boosting
   if (params.query) {
     must.push({
       multi_match: {
@@ -59,7 +60,6 @@ export async function searchRecipes(params: SearchParams): Promise<SearchResult>
     must.push({ match_all: {} });
   }
 
-  // Filters
   if (params.cuisine) {
     filter.push({ term: { "cuisine.keyword": params.cuisine } });
   }
@@ -147,8 +147,6 @@ export async function searchRecipes(params: SearchParams): Promise<SearchResult>
 export async function getSuggestions(prefix: string): Promise<string[]> {
   if (!prefix || prefix.length < 2) return [];
 
-  // Use prefix query on title field for autocomplete
-  // (completion suggester not supported in OpenSearch Serverless)
   const response = await client.search({
     index: INDEX_NAME,
     body: {
