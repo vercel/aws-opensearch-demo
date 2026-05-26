@@ -3,13 +3,71 @@
 import { useRouter } from "next/navigation";
 import { useState, FormEvent } from "react";
 import { Input } from "@/components/ui/input";
-import { Brain, Sparkles, Tag, Palette, Calendar } from "lucide-react";
+import { Brain, Tag, Calendar } from "lucide-react";
 import type { VectorSearchResult } from "@/lib/vector/queries";
 
 interface Props {
   initialQuery: string;
   result: VectorSearchResult | null;
 }
+
+// Color name → CSS color mapping
+const colorMap: Record<string, string> = {
+  Cream: "#FFFDD0",
+  "Light Blue": "#ADD8E6",
+  Oatmeal: "#D4C5A9",
+  White: "#FFFFFF",
+  Black: "#1a1a1a",
+  Navy: "#001F3F",
+  Ivory: "#FFFFF0",
+  Charcoal: "#36454F",
+  Cognac: "#9A463D",
+  Emerald: "#50C878",
+  "Midnight Blue": "#191970",
+  Gold: "#FFD700",
+  Silver: "#C0C0C0",
+  Crystal: "#A7D8DE",
+  "Washed Black": "#3D3D3D",
+  Olive: "#808000",
+  Rust: "#B7410E",
+  Lilac: "#C8A2C8",
+  "Floral Multi": "#FF69B4",
+  Tan: "#D2B48C",
+  "Dusty Rose": "#DCAE96",
+  Brown: "#8B4513",
+  Natural: "#F5F5DC",
+  "Heather Grey": "#B6B6B4",
+  Camel: "#C19A6B",
+  "Navy Stripe": "#001F3F",
+  Sage: "#BCB88A",
+  Coral: "#FF7F50",
+  Blush: "#DE5D83",
+  Terracotta: "#E2725B",
+  Teal: "#008080",
+  Tortoiseshell: "#704214",
+};
+
+// Style → color mapping for badges
+const styleColors: Record<string, { bg: string; text: string; border: string }> = {
+  Casual: { bg: "bg-blue-50 dark:bg-blue-900/30", text: "text-blue-700 dark:text-blue-300", border: "border-blue-200 dark:border-blue-800" },
+  Professional: { bg: "bg-gray-50 dark:bg-gray-800", text: "text-gray-700 dark:text-gray-300", border: "border-gray-200 dark:border-gray-700" },
+  Evening: { bg: "bg-purple-50 dark:bg-purple-900/30", text: "text-purple-700 dark:text-purple-300", border: "border-purple-200 dark:border-purple-800" },
+  Streetwear: { bg: "bg-orange-50 dark:bg-orange-900/30", text: "text-orange-700 dark:text-orange-300", border: "border-orange-200 dark:border-orange-800" },
+  Bohemian: { bg: "bg-amber-50 dark:bg-amber-900/30", text: "text-amber-700 dark:text-amber-300", border: "border-amber-200 dark:border-amber-800" },
+  Minimalist: { bg: "bg-slate-50 dark:bg-slate-800", text: "text-slate-700 dark:text-slate-300", border: "border-slate-200 dark:border-slate-700" },
+  Athletic: { bg: "bg-green-50 dark:bg-green-900/30", text: "text-green-700 dark:text-green-300", border: "border-green-200 dark:border-green-800" },
+  Resort: { bg: "bg-cyan-50 dark:bg-cyan-900/30", text: "text-cyan-700 dark:text-cyan-300", border: "border-cyan-200 dark:border-cyan-800" },
+};
+
+// Category → emoji
+const categoryIcons: Record<string, string> = {
+  Tops: "👕",
+  Bottoms: "👖",
+  Dresses: "👗",
+  Shoes: "👟",
+  Outerwear: "🧥",
+  Accessories: "👜",
+};
 
 const exampleQueries = [
   "casual outfit for a coffee date in autumn",
@@ -38,6 +96,9 @@ export function VectorSearchInterface({ initialQuery, result }: Props) {
     router.push(`/vector?q=${encodeURIComponent(q)}`);
   }
 
+  // Get max score for normalizing the match bars
+  const maxScore = result?.items[0]?.score || 1;
+
   return (
     <div className="space-y-4">
       {/* Search input */}
@@ -56,7 +117,9 @@ export function VectorSearchInterface({ initialQuery, result }: Props) {
       {/* Example queries */}
       {!result && (
         <div className="space-y-3">
-          <p className="text-xs text-gray-500">Try these natural language queries:</p>
+          <p className="text-xs text-gray-500">
+            Try these natural language queries:
+          </p>
           <div className="flex flex-wrap gap-2">
             {exampleQueries.map((q) => (
               <button
@@ -87,45 +150,85 @@ export function VectorSearchInterface({ initialQuery, result }: Props) {
             </p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {result.items.map((item) => (
-                <div
-                  key={item.id}
-                  className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-900 hover:border-purple-200 dark:hover:border-purple-800 transition-colors"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100">
-                      {item.name}
-                    </h3>
-                    <span className="shrink-0 text-[10px] bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300 px-2 py-0.5 rounded-full font-mono flex items-center gap-1">
-                      <Sparkles className="w-3 h-3" />
-                      {(item.score * 100).toFixed(0)}%
-                    </span>
+              {result.items.map((item, idx) => {
+                const matchPercent = (item.score / maxScore) * 100;
+                const style = styleColors[item.style] || styleColors.Casual;
+                const borderIntensity =
+                  matchPercent > 80
+                    ? "border-purple-400 dark:border-purple-500"
+                    : matchPercent > 60
+                      ? "border-purple-200 dark:border-purple-700"
+                      : "border-gray-200 dark:border-gray-700";
+
+                return (
+                  <div
+                    key={item.id || idx}
+                    className={`border-2 ${borderIntensity} rounded-lg p-4 bg-white dark:bg-gray-900 transition-colors`}
+                  >
+                    {/* Header: name + match bar */}
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <div className="flex items-center gap-2">
+                        {/* Color swatch */}
+                        <div
+                          className="w-4 h-4 rounded-full border border-gray-300 dark:border-gray-600 shrink-0"
+                          style={{
+                            backgroundColor:
+                              colorMap[item.color] || "#ccc",
+                          }}
+                          title={item.color}
+                        />
+                        <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100">
+                          {item.name}
+                        </h3>
+                      </div>
+                    </div>
+
+                    {/* Match percentage bar */}
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="flex-1 h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-purple-500 to-purple-300 rounded-full transition-all"
+                          style={{ width: `${matchPercent}%` }}
+                        />
+                      </div>
+                      <span className="text-[10px] font-mono text-purple-600 dark:text-purple-400 shrink-0">
+                        {matchPercent.toFixed(0)}%
+                      </span>
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                      {item.description}
+                    </p>
+
+                    {/* Meta row */}
+                    <div className="flex flex-wrap items-center gap-2 text-[11px]">
+                      {/* Category with icon */}
+                      <span className="flex items-center gap-1 text-gray-500">
+                        <span>{categoryIcons[item.category] || "🏷️"}</span>
+                        {item.category}
+                      </span>
+
+                      {/* Style badge with color */}
+                      <span
+                        className={`px-1.5 py-0.5 rounded border ${style.bg} ${style.text} ${style.border}`}
+                      >
+                        {item.style}
+                      </span>
+
+                      {/* Season */}
+                      <span className="flex items-center gap-1 text-gray-400">
+                        <Calendar className="w-3 h-3" />
+                        {item.season.slice(0, 2).join(", ")}
+                        {item.season.length > 2 && "..."}
+                      </span>
+
+                      {/* Price */}
+                      <span className="text-gray-400">{item.priceRange}</span>
+                    </div>
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    {item.description}
-                  </p>
-                  <div className="flex flex-wrap items-center gap-2 mt-3 text-[11px] text-gray-400">
-                    <span className="flex items-center gap-1">
-                      <Tag className="w-3 h-3" />
-                      {item.category}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Palette className="w-3 h-3" />
-                      {item.color}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Calendar className="w-3 h-3" />
-                      {item.season.join(", ")}
-                    </span>
-                    <span className="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800">
-                      {item.style}
-                    </span>
-                    <span className="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800">
-                      {item.priceRange}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
