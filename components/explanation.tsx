@@ -6,7 +6,7 @@ export default function Explanation() {
     <div className="text-gray-800 dark:text-gray-200 text-sm border border-dashed border-gray-300 dark:border-gray-600 p-4 mb-4 font-mono bg-white dark:bg-gray-900">
       <div className="mb-4">
         <Image
-          src="/Vercel-AWS-GitHub-opensearch.png"
+          src="/banner.png"
           alt="Vercel AWS OpenSearch Serverless integration"
           width={600}
           height={315}
