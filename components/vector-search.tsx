@@ -45,6 +45,18 @@ const colorMap: Record<string, string> = {
   Terracotta: "#E2725B",
   Teal: "#008080",
   Tortoiseshell: "#704214",
+  Khaki: "#C3B091",
+  "Dark Green": "#013220",
+  Burgundy: "#800020",
+  Indigo: "#3F0071",
+  Sand: "#C2B280",
+  "Dark Brown": "#3B2F2F",
+  "Medium Blue": "#4682B4",
+  Stone: "#928E85",
+  "Vintage Blue": "#5B7FA3",
+  "Forest Green": "#228B22",
+  Yellow: "#FFD700",
+  "Cream/Green": "#F5F5DC",
 };
 
 // Style → color mapping for badges
@@ -114,25 +126,39 @@ export function VectorSearchInterface({ initialQuery, result }: Props) {
         </div>
       </form>
 
-      {/* Example queries */}
-      {!result && (
-        <div className="space-y-3">
+      {/* Example queries - always visible */}
+      <div className="space-y-2">
+        {result && (
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-gray-500">Try another query:</p>
+            <button
+              onClick={() => {
+                setQuery("");
+                router.push("/vector");
+              }}
+              className="text-xs px-3 py-1 rounded border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 transition-colors"
+            >
+              ✕ Clear
+            </button>
+          </div>
+        )}
+        {!result && (
           <p className="text-xs text-gray-500">
             Try these natural language queries:
           </p>
-          <div className="flex flex-wrap gap-2">
-            {exampleQueries.map((q) => (
-              <button
-                key={q}
-                onClick={() => handleExample(q)}
-                className="text-xs px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-purple-300 hover:text-purple-600 dark:hover:border-purple-700 dark:hover:text-purple-400 transition-colors"
-              >
-                {q}
-              </button>
-            ))}
-          </div>
+        )}
+        <div className="flex flex-wrap gap-2">
+          {exampleQueries.map((q) => (
+            <button
+              key={q}
+              onClick={() => handleExample(q)}
+              className="text-xs px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-purple-300 hover:text-purple-600 dark:hover:border-purple-700 dark:hover:text-purple-400 transition-colors"
+            >
+              {q}
+            </button>
+          ))}
         </div>
-      )}
+      </div>
 
       {/* Results */}
       {result && (
