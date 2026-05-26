@@ -11,6 +11,8 @@ export interface Recipe {
   diet: string[];
   cookTimeMinutes: number;
   ingredients: string[];
+  servings?: number;
+  instructions?: string[];
   highlight?: {
     title?: string[];
     description?: string[];
@@ -40,6 +42,23 @@ export interface SearchParams {
 }
 
 export async function searchRecipes(
+  params: SearchParams,
+): Promise<SearchResult> {
+  try {
+    return await _searchRecipes(params);
+  } catch (error: any) {
+    console.error("OpenSearch query failed:", error.message);
+    // Return empty results with error info instead of crashing
+    return {
+      recipes: [],
+      facets: { cuisines: [], diets: [], cookTime: [] },
+      total: 0,
+      queryTimeMs: "0",
+    };
+  }
+}
+
+async function _searchRecipes(
   params: SearchParams,
 ): Promise<SearchResult> {
   const startTime = performance.now();
@@ -104,7 +123,7 @@ export async function searchRecipes(
           },
         },
       },
-      size: 12,
+      size: 24,
     },
   });
 
