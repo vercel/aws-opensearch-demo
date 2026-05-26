@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import { searchRecipes } from "@/lib/opensearch/queries";
 import { SearchInterface } from "@/components/search-interface";
-import Explanation from "@/components/explanation";
 import Loading from "@/components/loading";
 
 type Props = {
@@ -16,7 +15,6 @@ type Props = {
 export default async function SearchPage({ searchParams }: Props) {
   return (
     <div>
-      <Explanation />
       <Suspense fallback={<Loading />}>
         <Results searchParams={searchParams} />
       </Suspense>

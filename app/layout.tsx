@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Geist_Mono } from "next/font/google";
 import { TabNavigation } from "@/components/tab-navigation";
+import Explanation from "@/components/explanation";
 
 export const metadata: Metadata = {
   title: "OpenSearch Serverless Demo",
@@ -22,14 +23,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geist.className} antialiased bg-white dark:bg-black`}>
         <div className="container mx-auto p-4 max-w-5xl">
-          <header className="mb-2">
-            <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">
-              OpenSearch Serverless Demo
-            </h1>
-            <p className="text-xs text-gray-500">
-              Three collection types — one app
-            </p>
-          </header>
+          <Explanation />
           <TabNavigation />
           {children}
         </div>

@@ -11,10 +11,11 @@ export default function Explanation() {
           width={600}
           height={315}
           className="w-full h-auto rounded"
+          loading="eager"
         />
       </div>
       <p className="mb-2">
-        This app uses <b className="font-bold">Amazon OpenSearch Service</b>{" "}
+        This app uses <b className="font-bold">Amazon OpenSearch Serverless</b>{" "}
         with Next.js and Vercel (
         <Link
           href="https://github.com/KishoreKicha14/aws-opensearch-demo"
@@ -24,49 +25,29 @@ export default function Explanation() {
         >
           view source
         </Link>
-        ).
+        ). It demonstrates all three collection types: Search, Vector, and Time
+        Series.
       </p>
-
-      <details className="group mb-2">
-        <summary className="cursor-pointer hover:text-gray-900 dark:hover:text-white">
-          <span className="pl-1">How does this work?</span>
-        </summary>
-        <p className="p-5 mt-2 bg-gray-100 dark:bg-gray-800">
-          Recipes are indexed in OpenSearch with full-text search capabilities.
-          The search uses{" "}
-          <code className="bg-gray-200 dark:bg-gray-700 px-1">multi_match</code>{" "}
-          with field boosting and fuzzy matching. Faceted filters use{" "}
-          <code className="bg-gray-200 dark:bg-gray-700 px-1">aggregations</code>{" "}
-          to show real-time counts. Matching terms are highlighted using
-          OpenSearch&apos;s built-in{" "}
-          <code className="bg-gray-200 dark:bg-gray-700 px-1">highlight</code>{" "}
-          API. Autocomplete uses{" "}
-          <code className="bg-gray-200 dark:bg-gray-700 px-1">
-            match_phrase_prefix
-          </code>{" "}
-          for prefix matching.
-        </p>
-      </details>
 
       <details className="group">
         <summary className="cursor-pointer hover:text-gray-900 dark:hover:text-white">
-          <span className="pl-1">Why OpenSearch for search?</span>
+          <span className="pl-1">How does this work?</span>
         </summary>
-        <p className="p-5 mt-2 bg-gray-100 dark:bg-gray-800">
-          Unlike relational databases that use B-tree indices, OpenSearch uses
-          inverted indices optimized for full-text search. This enables
-          sub-millisecond relevance-scored queries, fuzzy matching for typo
-          tolerance, faceted aggregations without GROUP BY overhead, and
-          built-in highlighting of matched terms.{" "}
-          <Link
-            href="https://aws.amazon.com/opensearch-service/"
-            target="_blank"
-            rel="noreferrer"
-            className="text-gray-900 dark:text-white border-b border-gray-900 dark:border-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-          >
-            Learn more.
-          </Link>
-        </p>
+        <div className="p-4 mt-2 bg-gray-100 dark:bg-gray-800 text-xs space-y-2">
+          <p>
+            <b>Search tab:</b> Full-text keyword search with{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1">multi_match</code>,
+            faceted aggregations, and highlighting.
+          </p>
+          <p>
+            <b>Vector tab:</b> Semantic search using k-NN with 384-dimensional
+            embeddings (all-MiniLM-L6-v2). Matches by meaning, not keywords.
+          </p>
+          <p>
+            <b>Time Series tab:</b> Log analytics with date_histogram
+            aggregations for latency and error rate visualization.
+          </p>
+        </div>
       </details>
     </div>
   );
