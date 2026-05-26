@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Geist_Mono } from "next/font/google";
 
 export const metadata: Metadata = {
-  title: "Next.js + Amazon OpenSearch",
-  description:
-    "A Next.js app demonstrating full-text search with Amazon OpenSearch Service",
+  title: "Aurora OpenSearch Movies Demo",
+  description: "Search movies from an Amazon OpenSearch Service domain.",
 };
+
+const geist = Geist_Mono({
+  subsets: ["latin"],
+});
 
 export default function RootLayout({
   children,
@@ -13,8 +17,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="bg-gray-50 text-gray-900 antialiased">{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${geist.className} antialiased bg-white dark:bg-black`}>
+        {children}
+      </body>
     </html>
   );
 }

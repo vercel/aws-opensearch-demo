@@ -1,43 +1,40 @@
-import { SearchForm } from "@/components/search-form";
-import { MovieList } from "@/components/movie-list";
-import { searchMovies } from "@/app/actions";
+import Explanation from "@/components/explanation";
+import Loading from "@/components/loading";
+import { MovieVoting } from "@/components/movie-voting";
+import { getMovies } from "@/lib/opensearch/queries";
+import { cookies } from "next/headers";
+import { Suspense } from "react";
 
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: { q?: string };
-}) {
-  const query = searchParams.q || "";
-  const results = query ? await searchMovies(query) : null;
+type Props = {
+  searchParams: Promise<{ filter: string | undefined }>;
+};
+
+export default async function HomePage({ searchParams }: Props) {
+  return (
+    <div className="container mx-auto p-4 max-w-3xl">
+      <Explanation />
+      <Suspense fallback={<Loading />}>
+        <Movies searchParams={searchParams} />
+      </Suspense>
+    </div>
+  );
+}
+
+async function Movies({ searchParams }: Props) {
+  const { filter } = await searchParams;
+  const cookieStore = await cookies();
+  const sessionId = cookieStore.get("sessionId")?.value;
+  const { movies, totalRecords, queryTimeMs } = await getMovies(
+    sessionId,
+    filter,
+  );
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-16">
-      <div className="mb-12 text-center">
-        <h1 className="mb-2 text-4xl font-bold tracking-tight">
-          Next.js + Amazon OpenSearch
-        </h1>
-        <p className="text-gray-600">
-          Full-text search powered by Amazon OpenSearch Service
-        </p>
-      </div>
-
-      <SearchForm initialQuery={query} />
-
-      {results && (
-        <div className="mt-8">
-          <p className="mb-4 text-sm text-gray-500">
-            {results.total} result{results.total !== 1 ? "s" : ""} in{" "}
-            {results.took}ms
-          </p>
-          <MovieList movies={results.movies} />
-        </div>
-      )}
-
-      {query && results && results.total === 0 && (
-        <p className="mt-8 text-center text-gray-500">
-          No movies found for &ldquo;{query}&rdquo;
-        </p>
-      )}
-    </main>
+    <MovieVoting
+      movies={movies}
+      highlight={filter || ""}
+      queryTimeMs={queryTimeMs}
+      totalRecords={totalRecords}
+    />
   );
 }
