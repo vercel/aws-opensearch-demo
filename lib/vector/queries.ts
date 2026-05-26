@@ -2,23 +2,24 @@ import { vectorClient } from "./client";
 import { generateEmbedding } from "./embeddings";
 import { performance } from "perf_hooks";
 
-const INDEX_NAME = "fashion";
+const INDEX_NAME = "destinations";
 
-export interface FashionResult {
+export interface DestinationResult {
   id: string;
   name: string;
   description: string;
-  category: string;
-  style: string;
-  season: string[];
-  occasion: string[];
-  color: string;
-  priceRange: string;
+  country: string;
+  region: string;
+  type: string;
+  bestSeason: string[];
+  activities: string[];
+  budget: string;
+  climate: string;
   score: number;
 }
 
 export interface VectorSearchResult {
-  items: FashionResult[];
+  items: DestinationResult[];
   queryTimeMs: string;
   total: number;
 }
@@ -29,10 +30,8 @@ export async function semanticSearch(
   try {
     const startTime = performance.now();
 
-    // Generate embedding for the user's query
     const queryVector = await generateEmbedding(query);
 
-    // k-NN search in OpenSearch Serverless
     const response = await vectorClient.search({
       index: INDEX_NAME,
       body: {
@@ -50,16 +49,9 @@ export async function semanticSearch(
     });
 
     const hits = response.body.hits;
-    const items: FashionResult[] = hits.hits.map((hit: any) => ({
+    const items: DestinationResult[] = hits.hits.map((hit: any) => ({
       id: hit._id,
-      name: hit._source.name,
-      description: hit._source.description,
-      category: hit._source.category,
-      style: hit._source.style,
-      season: hit._source.season,
-      occasion: hit._source.occasion,
-      color: hit._source.color,
-      priceRange: hit._source.priceRange,
+      ...hit._source,
       score: hit._score,
     }));
 
