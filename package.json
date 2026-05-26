@@ -5,7 +5,8 @@
     "build": "next build",
     "start": "next start",
     "seed": "npx tsx lib/opensearch/seed.ts",
-    "seed:vector": "npx tsx lib/vector/seed.ts"
+    "seed:vector": "npx tsx lib/vector/seed.ts",
+    "seed:timeseries": "npx tsx lib/timeseries/seed.ts"
   },
   "dependencies": {
     "@aws-sdk/credential-provider-node": "^3.600.0",
