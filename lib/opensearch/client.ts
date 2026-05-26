@@ -4,9 +4,9 @@ import { defaultProvider } from "@aws-sdk/credential-provider-node";
 
 const OPENSEARCH_ENDPOINT =
   process.env.OPENSEARCH_ENDPOINT ||
-  "https://ws7rk9i4hrsodv2dwo7b.ap-northeast-1.aoss.amazonaws.com";
+  "https://3ktzid9y809gx6psrzlg.us-east-1.aoss.amazonaws.com";
 
-const AWS_REGION = process.env.AWS_REGION || "ap-northeast-1";
+const AWS_REGION = process.env.AWS_REGION || "us-east-1";
 
 function createClient(): Client {
   return new Client({
