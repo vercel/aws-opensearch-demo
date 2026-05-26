@@ -43,7 +43,7 @@ export function SearchInterface({
       Object.entries(merged).forEach(([k, v]) => {
         if (v) params.set(k, v);
       });
-      return `/?${params.toString()}`;
+      return `/search?${params.toString()}`;
     },
     [query, initialCuisine, initialDiet, initialTime],
   );
@@ -114,7 +114,7 @@ export function SearchInterface({
 
   const clearAll = () => {
     setQuery("");
-    router.push("/");
+    router.push("/search");
   };
 
   const hasFilters = initialQuery || initialCuisine || initialDiet || initialTime;
