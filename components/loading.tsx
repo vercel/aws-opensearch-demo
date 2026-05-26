@@ -6,28 +6,23 @@ export default function Loading() {
     <div className="space-y-4">
       <Input
         type="text"
-        placeholder="Search movies..."
+        placeholder="Search recipes..."
         className="w-full"
         disabled
       />
-      <ul className="space-y-2">
-        {[...Array(8)].map((_, index) => (
-          <li
-            key={index}
-            className="flex items-center justify-between p-2 bg-gray-100 dark:bg-gray-900 rounded"
-          >
-            <div className="flex items-center flex-grow">
-              <div className="flex items-center space-x-1 mr-3">
-                <Skeleton className="h-6 w-6 rounded dark:bg-gray-700" />
-                <Skeleton className="h-4 w-8 dark:bg-gray-700" />
-                <Skeleton className="h-6 w-6 rounded dark:bg-gray-700" />
-              </div>
-              <Skeleton className="h-4 w-full max-w-[200px] dark:bg-gray-700" />
-            </div>
-            <Skeleton className="h-4 w-16 dark:bg-gray-700" />
-          </li>
-        ))}
-      </ul>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="space-y-3">
+          <Skeleton className="h-4 w-20 dark:bg-gray-700" />
+          <Skeleton className="h-6 w-full dark:bg-gray-700" />
+          <Skeleton className="h-6 w-full dark:bg-gray-700" />
+          <Skeleton className="h-6 w-full dark:bg-gray-700" />
+        </div>
+        <div className="md:col-span-3 space-y-3">
+          {[...Array(4)].map((_, i) => (
+            <Skeleton key={i} className="h-28 w-full dark:bg-gray-700" />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,19 +1,34 @@
-# Amazon OpenSearch Movies Demo
+# OpenSearch Recipe Search Demo
 
-This demo uses **Amazon OpenSearch Service** with Next.js to search and vote on movies. It connects to OpenSearch using basic authentication (fine-grained access control).
+A full-text **recipe search engine** powered by [Amazon OpenSearch Service](https://aws.amazon.com/opensearch-service/) and [Next.js](https://nextjs.org/), deployed on Vercel.
 
-## How it works
+## Features
 
-- Movies are indexed in an OpenSearch domain with full-text search capabilities
-- The app uses OpenSearch's `multi_match` query with fuzzy matching for typo-tolerant search
-- Users can upvote/downvote movies with optimistic UI updates via `useOptimistic`
-- Query performance is displayed in real-time
+- **Full-text search** with relevance scoring and fuzzy matching
+- **Faceted filtering** — filter by cuisine, dietary tags, and cook time
+- **Real-time aggregations** — filter counts update dynamically
+- **Search highlighting** — matched terms are visually highlighted in results
+- **Autocomplete** — completion suggestions as you type
+- **Custom analyzers** — synonym support (e.g. "bbq" matches "barbecue")
+- **Relevance scores** — visible per-result to show ranking quality
+
+## OpenSearch Features Demonstrated
+
+| Feature | How it's used |
+|---------|---------------|
+| `multi_match` | Search across title, description, ingredients with field boosting |
+| `fuzziness: AUTO` | Typo tolerance (e.g. "chiken" → "chicken") |
+| `highlight` | `<mark>` tags around matched terms in results |
+| `aggregations` | Faceted counts for cuisine, diet, cook time ranges |
+| `completion` suggester | Autocomplete dropdown as you type |
+| Custom `analyzer` | Synonym filter (bbq/barbecue, veggie/vegetable) |
+| `range` aggregation | Cook time bucketed into human-friendly ranges |
 
 ## Getting Started
 
 ### Prerequisites
 
-- An [Amazon OpenSearch Service](https://aws.amazon.com/opensearch-service/) domain with fine-grained access control enabled
+- An [Amazon OpenSearch Service](https://aws.amazon.com/opensearch-service/) domain
 - Node.js 18+
 
 ### Setup
@@ -30,6 +45,8 @@ cp .env.local.example .env.local
 npm run seed
 ```
 
+This creates a `recipes` index with 30 recipes, custom analyzers, and completion suggestions.
+
 ### Run locally
 
 ```bash
@@ -45,11 +62,25 @@ Open [http://localhost:3000](http://localhost:3000).
 ### Required Environment Variables
 
 - `OPENSEARCH_ENDPOINT` — Your OpenSearch domain endpoint
-- `OPENSEARCH_USERNAME` — Master user name
+- `OPENSEARCH_USERNAME` — Master user name (fine-grained access control)
 - `OPENSEARCH_PASSWORD` — Master user password
+
+## Architecture
+
+```
+┌─────────────────┐         ┌──────────────────────────┐
+│   Vercel        │         │  Amazon OpenSearch        │
+│   (Next.js)     │────────▶│  Service                 │
+│                 │◀────────│                          │
+│  • SSR search   │         │  • Inverted indices      │
+│  • API routes   │         │  • Aggregations          │
+│  • Autocomplete │         │  • Completion suggester  │
+└─────────────────┘         └──────────────────────────┘
+```
 
 ## Learn More
 
 - [Amazon OpenSearch Service](https://aws.amazon.com/opensearch-service/)
-- [OpenSearch JavaScript Client](https://opensearch.org/docs/latest/clients/javascript/index/)
+- [OpenSearch Query DSL](https://opensearch.org/docs/latest/query-dsl/)
+- [OpenSearch Aggregations](https://opensearch.org/docs/latest/aggregations/)
 - [Next.js Documentation](https://nextjs.org/docs)

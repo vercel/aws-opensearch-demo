@@ -22,37 +22,32 @@ export default function Explanation() {
           <span className="pl-1">How does this work?</span>
         </summary>
         <p className="p-5 mt-2 bg-gray-100 dark:bg-gray-800">
-          Movies are fetched from the OpenSearch index when the page loads. It
-          has been seeded with popular movies from{" "}
-          <Link
-            href="https://www.kaggle.com/datasets/tmdb/tmdb-movie-metadata"
-            target="_blank"
-            rel="noreferrer"
-            className="text-gray-900 dark:text-white border-b border-gray-900 dark:border-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-          >
-            TMDB.
-          </Link>{" "}
-          When a user votes on a movie,{" "}
-          <code className="bg-gray-200 dark:bg-gray-700 px-1">
-            useOptimistic
-          </code>{" "}
-          is used to instantly show the new score and updated time.
+          Recipes are indexed in OpenSearch with custom analyzers and synonym
+          support. The search uses{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1">multi_match</code>{" "}
+          with field boosting and fuzzy matching. Faceted filters use{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1">aggregations</code>{" "}
+          to show real-time counts. Matching terms are highlighted using
+          OpenSearch&apos;s built-in{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1">highlight</code>{" "}
+          API. Autocomplete uses the{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1">completion</code>{" "}
+          suggester field type.
         </p>
       </details>
 
       <details className="group">
         <summary className="cursor-pointer hover:text-gray-900 dark:hover:text-white">
           <span className="pl-1">
-            How is OpenSearch different from other databases?
+            Why OpenSearch for search?
           </span>
         </summary>
         <p className="p-5 mt-2 bg-gray-100 dark:bg-gray-800">
-          Amazon OpenSearch Service is a managed search and analytics engine
-          based on Apache Lucene. It provides full-text search with relevance
-          scoring, fuzzy matching, and millisecond query latency. Unlike
-          traditional relational databases, OpenSearch is optimized for search
-          workloads with inverted indices, making it ideal for filtering and
-          ranking large datasets.{" "}
+          Unlike relational databases that use B-tree indices, OpenSearch uses
+          inverted indices optimized for full-text search. This enables
+          sub-millisecond relevance-scored queries, fuzzy matching for typo
+          tolerance, faceted aggregations without GROUP BY overhead, and
+          built-in highlighting of matched terms.{" "}
           <Link
             href="https://aws.amazon.com/opensearch-service/"
             target="_blank"

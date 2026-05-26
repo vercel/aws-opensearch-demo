@@ -1,40 +1,45 @@
+import { Suspense } from "react";
+import { searchRecipes } from "@/lib/opensearch/queries";
+import { SearchInterface } from "@/components/search-interface";
 import Explanation from "@/components/explanation";
 import Loading from "@/components/loading";
-import { MovieVoting } from "@/components/movie-voting";
-import { getMovies } from "@/lib/opensearch/queries";
-import { cookies } from "next/headers";
-import { Suspense } from "react";
 
 type Props = {
-  searchParams: Promise<{ filter: string | undefined }>;
+  searchParams: Promise<{
+    q?: string;
+    cuisine?: string;
+    diet?: string;
+    time?: string;
+  }>;
 };
 
 export default async function HomePage({ searchParams }: Props) {
   return (
-    <div className="container mx-auto p-4 max-w-3xl">
+    <div className="container mx-auto p-4 max-w-5xl">
       <Explanation />
       <Suspense fallback={<Loading />}>
-        <Movies searchParams={searchParams} />
+        <Results searchParams={searchParams} />
       </Suspense>
     </div>
   );
 }
 
-async function Movies({ searchParams }: Props) {
-  const { filter } = await searchParams;
-  const cookieStore = await cookies();
-  const sessionId = cookieStore.get("sessionId")?.value;
-  const { movies, totalRecords, queryTimeMs } = await getMovies(
-    sessionId,
-    filter,
-  );
+async function Results({ searchParams }: Props) {
+  const params = await searchParams;
+  const result = await searchRecipes({
+    query: params.q || undefined,
+    cuisine: params.cuisine || undefined,
+    diet: params.diet || undefined,
+    maxCookTime: params.time ? parseInt(params.time) : undefined,
+  });
 
   return (
-    <MovieVoting
-      movies={movies}
-      highlight={filter || ""}
-      queryTimeMs={queryTimeMs}
-      totalRecords={totalRecords}
+    <SearchInterface
+      initialQuery={params.q || ""}
+      initialCuisine={params.cuisine || ""}
+      initialDiet={params.diet || ""}
+      initialTime={params.time || ""}
+      result={result}
     />
   );
 }

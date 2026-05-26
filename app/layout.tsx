@@ -3,8 +3,9 @@ import "./globals.css";
 import { Geist_Mono } from "next/font/google";
 
 export const metadata: Metadata = {
-  title: "Aurora OpenSearch Movies Demo",
-  description: "Search movies from an Amazon OpenSearch Service domain.",
+  title: "OpenSearch Recipe Search",
+  description:
+    "Full-text recipe search with faceted filtering powered by Amazon OpenSearch Service.",
 };
 
 const geist = Geist_Mono({
