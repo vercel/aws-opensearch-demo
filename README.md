@@ -2,7 +2,7 @@
 
 This demo uses Amazon OpenSearch Serverless with Next.js to showcase all three collection types: **Search**, **Vector**, and **Time Series**. It connects securely using AWS SigV4 authentication.
 
-[![Banner](/public/banner.png)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FKishoreKicha14%2Faws-opensearch-demo&env=OPENSEARCH_ENDPOINT,VECTOR_OPENSEARCH_ENDPOINT,TIMESERIES_OPENSEARCH_ENDPOINT,AWS_REGION,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY&envDescription=Amazon%20OpenSearch%20Serverless%20credentials)
+[![Banner](/public/banner.png)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Faws-opensearch-demo&env=OPENSEARCH_ENDPOINT,VECTOR_OPENSEARCH_ENDPOINT,TIMESERIES_OPENSEARCH_ENDPOINT,AWS_REGION,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY&envDescription=Amazon%20OpenSearch%20Serverless%20credentials)
 
 **Demo Tabs:**
 
@@ -12,7 +12,7 @@ This demo uses Amazon OpenSearch Serverless with Next.js to showcase all three c
 | 🧠 Vector | Vector | Travel destination finder with semantic k-NN search |
 | 📊 Time Series | Time Series | Weather station network with time-based aggregations |
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FKishoreKicha14%2Faws-opensearch-demo&env=OPENSEARCH_ENDPOINT,VECTOR_OPENSEARCH_ENDPOINT,TIMESERIES_OPENSEARCH_ENDPOINT,AWS_REGION,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY&envDescription=Amazon%20OpenSearch%20Serverless%20credentials)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Faws-opensearch-demo&env=OPENSEARCH_ENDPOINT,VECTOR_OPENSEARCH_ENDPOINT,TIMESERIES_OPENSEARCH_ENDPOINT,AWS_REGION,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY&envDescription=Amazon%20OpenSearch%20Serverless%20credentials)
 
 ## Requirements
 

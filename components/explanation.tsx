@@ -18,7 +18,7 @@ export default function Explanation() {
         This app uses <b className="font-bold">Amazon OpenSearch Serverless</b>{" "}
         with Next.js and Vercel (
         <Link
-          href="https://github.com/KishoreKicha14/aws-opensearch-demo"
+          href="https://github.com/vercel/aws-opensearch-demo"
           target="_blank"
           rel="noreferrer"
           className="text-gray-900 dark:text-white border-b border-gray-900 dark:border-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
