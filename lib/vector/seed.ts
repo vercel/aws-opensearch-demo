@@ -6,21 +6,20 @@ import { fromWebToken } from "@aws-sdk/credential-providers";
 import { getVercelOidcToken } from "@vercel/oidc";
 import { destinations } from "./fashion-items";
 import { generateEmbedding, EMBEDDING_DIM } from "./embeddings";
+import { requireEnv } from "@/lib/utils";
 
 config({ path: path.resolve(process.cwd(), ".env.local") });
 
-const VECTOR_ENDPOINT =
-  process.env.VECTOR_OPENSEARCH_ENDPOINT ||
-  "https://9i1yy3zrca5efg16vasa.us-east-1.aoss.amazonaws.com";
-
-const AWS_REGION = process.env.AWS_REGION || "us-east-1";
+const VECTOR_ENDPOINT = requireEnv("VECTOR_OPENSEARCH_ENDPOINT");
+const AWS_REGION = requireEnv("VECTOR_AWS_REGION");
+const VECTOR_AWS_ROLE_ARN = requireEnv("VECTOR_AWS_ROLE_ARN");
 const INDEX_NAME = "destinations";
 
 async function main() {
   const getCredentials = async () => {
     const webIdentityToken = await getVercelOidcToken();
     return fromWebToken({
-      roleArn: process.env.AWS_ROLE_ARN!,
+      roleArn: VECTOR_AWS_ROLE_ARN,
       webIdentityToken,
     })();
   };
@@ -67,7 +66,6 @@ async function main() {
             method: {
               name: "hnsw",
               space_type: "l2",
-              engine: "faiss",
             },
           },
         },
