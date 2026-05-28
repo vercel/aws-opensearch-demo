@@ -17,16 +17,19 @@ const AWS_REGION = process.env.AWS_REGION || "us-east-1";
 const INDEX_NAME = "destinations";
 
 async function main() {
-  const credentialsProvider = fromWebToken({
-    roleArn: process.env.AWS_ROLE_ARN!,
-    webIdentityTokenSupplier: () => getVercelOidcToken(),
-  });
+  const getCredentials = async () => {
+    const webIdentityToken = await getVercelOidcToken();
+    return fromWebToken({
+      roleArn: process.env.AWS_ROLE_ARN!,
+      webIdentityToken,
+    })();
+  };
 
   const client = new Client({
     ...AwsSigv4Signer({
       region: AWS_REGION,
       service: "aoss",
-      getCredentials: () => credentialsProvider(),
+      getCredentials,
     }),
     node: VECTOR_ENDPOINT,
   });

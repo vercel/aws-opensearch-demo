@@ -9,17 +9,20 @@ const VECTOR_ENDPOINT =
 
 const AWS_REGION = process.env.AWS_REGION || "us-east-1";
 
-const credentialsProvider = fromWebToken({
-  roleArn: process.env.AWS_ROLE_ARN!,
-  webIdentityTokenSupplier: () => getVercelOidcToken(),
-});
+async function getCredentials() {
+  const webIdentityToken = await getVercelOidcToken();
+  return fromWebToken({
+    roleArn: process.env.AWS_ROLE_ARN!,
+    webIdentityToken,
+  })();
+}
 
 function createVectorClient(): Client {
   return new Client({
     ...AwsSigv4Signer({
       region: AWS_REGION,
       service: "aoss",
-      getCredentials: () => credentialsProvider(),
+      getCredentials,
     }),
     node: VECTOR_ENDPOINT,
   });

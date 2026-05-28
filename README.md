@@ -2,7 +2,7 @@
 
 This demo uses Amazon OpenSearch Serverless with Next.js to showcase two collection types: **Search** and **Vector**. It connects securely using AWS SigV4 authentication, with credentials obtained via **Vercel OIDC** — no static AWS keys required.
 
-[![Banner](/public/banner.png)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Faws-opensearch-demo&env=OPENSEARCH_ENDPOINT,VECTOR_OPENSEARCH_ENDPOINT,AWS_REGION,AWS_ROLE_ARN&envDescription=Amazon%20OpenSearch%20Serverless%20endpoints%20and%20the%20IAM%20role%20to%20assume%20via%20Vercel%20OIDC)
+[![Banner](/public/banner.png)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Faws-opensearch-demo&project-name=aws-opensearch-demo&repository-name=aws-opensearch-demo&products=%5B%7B%22type%22%3A%22integration%22%2C%22integrationSlug%22%3A%22aws%22%2C%22productSlug%22%3A%22opensearch%22%2C%22protocol%22%3A%22storage%22%7D%5D)
 
 **Demo Tabs:**
 
@@ -11,7 +11,7 @@ This demo uses Amazon OpenSearch Serverless with Next.js to showcase two collect
 | 🔍 Search | Search | Recipe search with facets, highlighting, and autocomplete |
 | 🧠 Vector | Vector | Travel destination finder with semantic k-NN search |
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Faws-opensearch-demo&env=OPENSEARCH_ENDPOINT,VECTOR_OPENSEARCH_ENDPOINT,AWS_REGION,AWS_ROLE_ARN&envDescription=Amazon%20OpenSearch%20Serverless%20endpoints%20and%20the%20IAM%20role%20to%20assume%20via%20Vercel%20OIDC)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Faws-opensearch-demo&project-name=aws-opensearch-demo&repository-name=aws-opensearch-demo&products=%5B%7B%22type%22%3A%22integration%22%2C%22integrationSlug%22%3A%22aws%22%2C%22productSlug%22%3A%22opensearch%22%2C%22protocol%22%3A%22storage%22%7D%5D)
 
 ## How auth works
 
