@@ -3,12 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Search, Brain, BarChart3 } from "lucide-react";
+import { Search, Brain } from "lucide-react";
 
 const tabs = [
   { href: "/search", label: "Search", icon: Search, description: "Full-text keyword search" },
   { href: "/vector", label: "Vector", icon: Brain, description: "Semantic AI search" },
-  { href: "/timeseries", label: "Time Series", icon: BarChart3, description: "Log analytics" },
 ];
 
 export function TabNavigation() {
