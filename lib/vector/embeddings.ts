@@ -1,23 +1,12 @@
-// @ts-nocheck
-import { pipeline } from "@xenova/transformers";
+import { embed } from "ai";
 
-let embedder: any = null;
-
-async function getEmbedder() {
-  if (!embedder) {
-    embedder = await pipeline(
-      "feature-extraction",
-      "Xenova/all-MiniLM-L6-v2",
-    );
-  }
-  return embedder;
-}
+export const EMBEDDING_MODEL = "openai/text-embedding-3-small";
+export const EMBEDDING_DIM = 1536;
 
 export async function generateEmbedding(text: string): Promise<number[]> {
-  const model = await getEmbedder();
-  const output = await model(text, { pooling: "mean", normalize: true });
-  return Array.from(output.data);
+  const { embedding } = await embed({
+    model: EMBEDDING_MODEL,
+    value: text,
+  });
+  return embedding;
 }
-
-// Embedding dimension for all-MiniLM-L6-v2
-export const EMBEDDING_DIM = 384;
