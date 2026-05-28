@@ -35,6 +35,7 @@ Provisioned automatically when you install the Vercel AWS OpenSearch integration
 | `VECTOR_OPENSEARCH_ENDPOINT` | Vector collection endpoint |
 | `VECTOR_AWS_REGION` | Region of the vector collection (may differ from `AWS_REGION`) |
 | `VECTOR_AWS_ROLE_ARN` | IAM role with access to the vector collection |
+| `AI_GATEWAY_API_KEY` | Vercel AI Gateway key, used to generate query embeddings for the vector page (`openai/text-embedding-3-small`). Create one at https://vercel.com/[team]/~/ai-gateway/api-keys |
 | `VERCEL_OIDC_TOKEN` | Short-lived Vercel OIDC token (auto-injected on Vercel; written locally by `vercel env pull`) |
 
 > The integration creates a **separate IAM role per collection**, each scoped to that one collection's ARN. The search and vector clients therefore use different role ARNs and regions — don't try to share one role across both.
