@@ -2,7 +2,8 @@ import { config } from "dotenv";
 import path from "path";
 import { Client } from "@opensearch-project/opensearch";
 import { AwsSigv4Signer } from "@opensearch-project/opensearch/aws";
-import { defaultProvider } from "@aws-sdk/credential-provider-node";
+import { fromWebToken } from "@aws-sdk/credential-providers";
+import { getVercelOidcToken } from "@vercel/oidc";
 import { destinations } from "./fashion-items";
 import { generateEmbedding, EMBEDDING_DIM } from "./embeddings";
 
@@ -16,14 +17,16 @@ const AWS_REGION = process.env.AWS_REGION || "us-east-1";
 const INDEX_NAME = "destinations";
 
 async function main() {
+  const credentialsProvider = fromWebToken({
+    roleArn: process.env.AWS_ROLE_ARN!,
+    webIdentityTokenSupplier: () => getVercelOidcToken(),
+  });
+
   const client = new Client({
     ...AwsSigv4Signer({
       region: AWS_REGION,
       service: "aoss",
-      getCredentials: () => {
-        const credentialsProvider = defaultProvider();
-        return credentialsProvider();
-      },
+      getCredentials: () => credentialsProvider(),
     }),
     node: VECTOR_ENDPOINT,
   });
