@@ -25,30 +25,10 @@ export default function Explanation() {
         >
           view source
         </Link>
-        ). It demonstrates all three collection types: Search, Vector, and Time
-        Series.
+        ). It demonstrates full-text recipe search with{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1">multi_match</code>,
+        faceted aggregations, and highlighting.
       </p>
-
-      <details className="group">
-        <summary className="cursor-pointer hover:text-gray-900 dark:hover:text-white">
-          <span className="pl-1">How does this work?</span>
-        </summary>
-        <div className="p-4 mt-2 bg-gray-100 dark:bg-gray-800 text-xs space-y-2">
-          <p>
-            <b>Search tab:</b> Full-text keyword search with{" "}
-            <code className="bg-gray-200 dark:bg-gray-700 px-1">multi_match</code>,
-            faceted aggregations, and highlighting.
-          </p>
-          <p>
-            <b>Vector tab:</b> Semantic search using k-NN with 384-dimensional
-            embeddings (all-MiniLM-L6-v2). Matches by meaning, not keywords.
-          </p>
-          <p>
-            <b>Time Series tab:</b> Log analytics with date_histogram
-            aggregations for latency and error rate visualization.
-          </p>
-        </div>
-      </details>
     </div>
   );
 }

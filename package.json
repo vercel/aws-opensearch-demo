@@ -4,15 +4,13 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "seed": "npx tsx lib/opensearch/seed.ts",
-    "seed:vector": "npx tsx lib/vector/seed.ts"
+    "seed": "npx tsx lib/opensearch/seed.ts"
   },
   "dependencies": {
     "@aws-sdk/credential-providers": "^3.600.0",
     "@opensearch-project/opensearch": "^2.7.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@vercel/oidc": "^3.0.4",
-    "ai": "^6.0.191",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.7",
