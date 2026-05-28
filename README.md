@@ -1,8 +1,8 @@
 # Amazon OpenSearch Serverless Demo
 
-This demo uses Amazon OpenSearch Serverless with Next.js to showcase all three collection types: **Search**, **Vector**, and **Time Series**. It connects securely using AWS SigV4 authentication.
+This demo uses Amazon OpenSearch Serverless with Next.js to showcase two collection types: **Search** and **Vector**. It connects securely using AWS SigV4 authentication, with credentials obtained via **Vercel OIDC** — no static AWS keys required.
 
-[![Banner](/public/banner.png)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Faws-opensearch-demo&env=OPENSEARCH_ENDPOINT,VECTOR_OPENSEARCH_ENDPOINT,TIMESERIES_OPENSEARCH_ENDPOINT,AWS_REGION,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY&envDescription=Amazon%20OpenSearch%20Serverless%20credentials)
+[![Banner](/public/banner.png)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Faws-opensearch-demo&env=OPENSEARCH_ENDPOINT,VECTOR_OPENSEARCH_ENDPOINT,AWS_REGION,AWS_ROLE_ARN&envDescription=Amazon%20OpenSearch%20Serverless%20endpoints%20and%20the%20IAM%20role%20to%20assume%20via%20Vercel%20OIDC)
 
 **Demo Tabs:**
 
@@ -10,15 +10,38 @@ This demo uses Amazon OpenSearch Serverless with Next.js to showcase all three c
 |-----|----------------|----------|
 | 🔍 Search | Search | Recipe search with facets, highlighting, and autocomplete |
 | 🧠 Vector | Vector | Travel destination finder with semantic k-NN search |
-| 📊 Time Series | Time Series | Weather station network with time-based aggregations |
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Faws-opensearch-demo&env=OPENSEARCH_ENDPOINT,VECTOR_OPENSEARCH_ENDPOINT,TIMESERIES_OPENSEARCH_ENDPOINT,AWS_REGION,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY&envDescription=Amazon%20OpenSearch%20Serverless%20credentials)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Faws-opensearch-demo&env=OPENSEARCH_ENDPOINT,VECTOR_OPENSEARCH_ENDPOINT,AWS_REGION,AWS_ROLE_ARN&envDescription=Amazon%20OpenSearch%20Serverless%20endpoints%20and%20the%20IAM%20role%20to%20assume%20via%20Vercel%20OIDC)
+
+## How auth works
+
+The app uses [`@vercel/oidc`](https://www.npmjs.com/package/@vercel/oidc) to read Vercel's short-lived OIDC token and exchanges it for AWS credentials via STS `AssumeRoleWithWebIdentity` (`fromWebToken` in the AWS SDK). On Vercel, `VERCEL_OIDC_TOKEN` is injected automatically; locally, `vercel env pull` writes one valid for ~12 hours.
 
 ## Requirements
 
-- Three Amazon OpenSearch Serverless collections (Search, Vector, Time Series)
-- AWS credentials with data access policies configured
+- Two Amazon OpenSearch Serverless collections (Search, Vector)
+- An IAM role whose trust policy allows Vercel's OIDC issuer (`https://oidc.vercel.com/<team-slug>`) and whose policy grants `aoss:APIAccessAll` on your collections
 - Node.js 18+
+
+### Configure the IAM role trust policy
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": { "Federated": "arn:aws:iam::<account-id>:oidc-provider/oidc.vercel.com/<team-slug>" },
+      "Action": "sts:AssumeRoleWithWebIdentity",
+      "Condition": {
+        "StringEquals": {
+          "oidc.vercel.com/<team-slug>:aud": "https://vercel.com/<team-slug>"
+        }
+      }
+    }
+  ]
+}
+```
 
 ## Local Setup
 
@@ -28,19 +51,18 @@ This demo uses Amazon OpenSearch Serverless with Next.js to showcase all three c
 npm install
 ```
 
-2. Configure environment variables:
+2. Link the project and pull env vars (this provisions `VERCEL_OIDC_TOKEN`):
 
 ```bash
-cp .env.local.example .env.local
-# Edit .env.local with your collection endpoints and AWS credentials
+vercel link
+vercel env pull .env.local
 ```
 
-3. Seed all three indexes:
+3. Seed both indexes:
 
 ```bash
-npm run seed            # Recipe search index (107 recipes)
-npm run seed:vector     # Travel destinations with embeddings (40 destinations)
-npm run seed:timeseries # Weather station data (1344 hourly readings)
+npm run seed         # Recipe search index (107 recipes)
+npm run seed:vector  # Travel destinations with embeddings (40 destinations)
 ```
 
 4. Start the development server:
@@ -51,8 +73,12 @@ npm run dev
 
 5. View local development: http://localhost:3000
 
+> The local OIDC token expires after ~12 hours. If you see AWS auth errors mid-session, re-run `vercel env pull .env.local --yes`.
+
 ## Learn More
 
+- [Vercel OIDC Federation](https://vercel.com/docs/oidc)
+- [`@vercel/oidc` on npm](https://www.npmjs.com/package/@vercel/oidc)
 - [Amazon OpenSearch Serverless](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless.html)
 - [OpenSearch Query DSL](https://opensearch.org/docs/latest/query-dsl/)
 - [OpenSearch k-NN Plugin](https://opensearch.org/docs/latest/search-plugins/knn/)
