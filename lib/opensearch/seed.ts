@@ -5,21 +5,20 @@ import { AwsSigv4Signer } from "@opensearch-project/opensearch/aws";
 import { fromWebToken } from "@aws-sdk/credential-providers";
 import { getVercelOidcToken } from "@vercel/oidc";
 import { recipes } from "./recipes";
+import { requireEnv } from "@/lib/utils";
 
 config({ path: path.resolve(process.cwd(), ".env.local") });
 
-const OPENSEARCH_ENDPOINT =
-  process.env.OPENSEARCH_ENDPOINT ||
-  "https://3ktzid9y809gx6psrzlg.us-east-1.aoss.amazonaws.com";
-
-const AWS_REGION = process.env.AWS_REGION || "us-east-1";
+const OPENSEARCH_ENDPOINT = requireEnv("OPENSEARCH_ENDPOINT");
+const AWS_REGION = requireEnv("AWS_REGION");
+const AWS_ROLE_ARN = requireEnv("AWS_ROLE_ARN");
 const INDEX_NAME = "recipes";
 
 async function main() {
   const getCredentials = async () => {
     const webIdentityToken = await getVercelOidcToken();
     return fromWebToken({
-      roleArn: process.env.AWS_ROLE_ARN!,
+      roleArn: AWS_ROLE_ARN,
       webIdentityToken,
     })();
   };

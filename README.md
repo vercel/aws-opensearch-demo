@@ -19,9 +19,25 @@ The app uses [`@vercel/oidc`](https://www.npmjs.com/package/@vercel/oidc) to rea
 
 ## Requirements
 
-- Two Amazon OpenSearch Serverless collections (Search, Vector)
-- An IAM role whose trust policy allows Vercel's OIDC issuer (`https://oidc.vercel.com/<team-slug>`) and whose policy grants `aoss:APIAccessAll` on your collections
+- Two Amazon OpenSearch Serverless collections (Search, Vector) — each may live in a different AWS region
+- One IAM role per collection, where each role's trust policy allows Vercel's OIDC issuer (`https://oidc.vercel.com/<team-slug>`) and its policy grants `aoss:APIAccessAll` on that collection. The Vercel AWS OpenSearch integration creates these per-collection roles automatically and exposes them as the env vars below.
 - Node.js 18+
+
+### Environment variables
+
+Provisioned automatically when you install the Vercel AWS OpenSearch integration once per collection. After `vercel env pull .env.local` you should see:
+
+| Variable | Purpose |
+|---|---|
+| `OPENSEARCH_ENDPOINT` | Search collection endpoint |
+| `AWS_REGION` | Region of the search collection |
+| `AWS_ROLE_ARN` | IAM role with access to the search collection |
+| `VECTOR_OPENSEARCH_ENDPOINT` | Vector collection endpoint |
+| `VECTOR_AWS_REGION` | Region of the vector collection (may differ from `AWS_REGION`) |
+| `VECTOR_AWS_ROLE_ARN` | IAM role with access to the vector collection |
+| `VERCEL_OIDC_TOKEN` | Short-lived Vercel OIDC token (auto-injected on Vercel; written locally by `vercel env pull`) |
+
+> The integration creates a **separate IAM role per collection**, each scoped to that one collection's ARN. The search and vector clients therefore use different role ARNs and regions — don't try to share one role across both.
 
 ### Configure the IAM role trust policy
 

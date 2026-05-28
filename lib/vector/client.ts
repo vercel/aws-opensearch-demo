@@ -2,17 +2,16 @@ import { Client } from "@opensearch-project/opensearch";
 import { AwsSigv4Signer } from "@opensearch-project/opensearch/aws";
 import { fromWebToken } from "@aws-sdk/credential-providers";
 import { getVercelOidcToken } from "@vercel/oidc";
+import { requireEnv } from "@/lib/utils";
 
-const VECTOR_ENDPOINT =
-  process.env.VECTOR_OPENSEARCH_ENDPOINT ||
-  "https://9i1yy3zrca5efg16vasa.us-east-1.aoss.amazonaws.com";
-
-const AWS_REGION = process.env.AWS_REGION || "us-east-1";
+const VECTOR_ENDPOINT = requireEnv("VECTOR_OPENSEARCH_ENDPOINT");
+const AWS_REGION = requireEnv("VECTOR_AWS_REGION");
+const VECTOR_AWS_ROLE_ARN = requireEnv("VECTOR_AWS_ROLE_ARN");
 
 async function getCredentials() {
   const webIdentityToken = await getVercelOidcToken();
   return fromWebToken({
-    roleArn: process.env.AWS_ROLE_ARN!,
+    roleArn: VECTOR_AWS_ROLE_ARN,
     webIdentityToken,
   })();
 }
